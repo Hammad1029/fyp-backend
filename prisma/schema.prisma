@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Permissions {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  RolePermissions RolePermissions[]
+}
+
+model Roles {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  RolePermissions RolePermissions[]
+  Admins          Admins[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model RolePermissions {
+  permission   Permissions @relation(fields: [permissionId], references: [id])
+  permissionId Int
+  role         Roles       @relation(fields: [roleId], references: [id])
+  roleId       Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@id([permissionId, roleId])
+}
+
+model Admins {
+  id             Int          @id
+  name           String
+  email          String       @unique
+  role           Roles        @relation(fields: [roleId], references: [id])
+  roleId         Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Organization {
+  id                Int                 @id
+  name              String
+  email             String              @unique
+  logo              String
+  Admins            Admins[]
+  type              String
+  Game              Game[]
+  PlayerInstitution PlayerInstitution[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model Question {
+  id           Int            @id
+  content      String
+  time         Int
+  difficulty   Difficulty     @default(MEDIUM)
+  Answer       Answer[]
+  type         QuestionType   @default(TEXT)
+  GameQuestion GameQuestion[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum QuestionType {
+  TEXT
+  IMAGE
+  AUDIO
+}
+
+model Answer {
+  id         Int      @id
+  content    String
+  correct    Boolean
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Game {
+  id             Int            @id
+  name           String
+  organizationId Int
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  GameQuestion   GameQuestion[]
+  Attempt        Attempt[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model GameQuestion {
+  game       Game     @relation(fields: [gameId], references: [id])
+  gameId     Int
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@id([gameId, questionId])
+}
+
+model Player {
+  id                Int                 @id
+  email             String              @unique
+  password          String
+  displayName       String
+  profilePhoto      String
+  PlayerInstitution PlayerInstitution[]
+  Attempt           Attempt[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model PlayerInstitution {
+  player         Player       @relation(fields: [playerId], references: [id])
+  playerId       Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@id([playerId, organizationId])
+}
+
+model Attempt {
+  id        Int      @id
+  player    Player   @relation(fields: [playerId], references: [id])
+  playerId  Int
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    Int
+  timeTaken Int
+  stats     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
