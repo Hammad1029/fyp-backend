@@ -36,19 +36,21 @@ model RolePermissions {
 }
 
 model Admins {
-  id             Int          @id
-  name           String
-  email          String       @unique
-  role           Roles        @relation(fields: [roleId], references: [id])
-  roleId         Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            Int         @id @default(autoincrement())
+  name          String
+  email         String      @unique
+  password      String
+  token         String
+  role          Roles       @relation(fields: [roleId], references: [id])
+  roleId        Int
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  institutionId Int         @map("institutionId")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
-model Organization {
-  id                Int                 @id
+model Institution {
+  id                Int                 @id @default(autoincrement())
   name              String
   email             String              @unique
   logo              String
@@ -58,10 +60,12 @@ model Organization {
   PlayerInstitution PlayerInstitution[]
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+
+  @@map("Institution")
 }
 
 model Question {
-  id           Int            @id
+  id           Int            @id @default(autoincrement())
   content      String
   time         Int
   difficulty   Difficulty     @default(MEDIUM)
@@ -85,7 +89,7 @@ enum QuestionType {
 }
 
 model Answer {
-  id         Int      @id
+  id         Int      @id @default(autoincrement())
   content    String
   correct    Boolean
   questionId Int
@@ -95,14 +99,14 @@ model Answer {
 }
 
 model Game {
-  id             Int            @id
-  name           String
-  organizationId Int
-  organization   Organization   @relation(fields: [organizationId], references: [id])
-  GameQuestion   GameQuestion[]
-  Attempt        Attempt[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id            Int            @id @default(autoincrement())
+  name          String
+  institutionId Int            @map("institutionId")
+  institution   Institution    @relation(fields: [institutionId], references: [id])
+  GameQuestion  GameQuestion[]
+  Attempt       Attempt[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model GameQuestion {
@@ -117,9 +121,10 @@ model GameQuestion {
 }
 
 model Player {
-  id                Int                 @id
+  id                Int                 @id @default(autoincrement())
   email             String              @unique
   password          String
+  token             String
   displayName       String
   profilePhoto      String
   PlayerInstitution PlayerInstitution[]
@@ -129,18 +134,19 @@ model Player {
 }
 
 model PlayerInstitution {
-  player         Player       @relation(fields: [playerId], references: [id])
-  playerId       Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  player        Player      @relation(fields: [playerId], references: [id])
+  playerId      Int
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  institutionId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  @@id([playerId, organizationId])
+  @@id([playerId, institutionId])
+  @@map("PlayerInstitution")
 }
 
 model Attempt {
-  id        Int      @id
+  id        Int      @id @default(autoincrement())
   player    Player   @relation(fields: [playerId], references: [id])
   playerId  Int
   game      Game     @relation(fields: [gameId], references: [id])
