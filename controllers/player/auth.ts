@@ -5,12 +5,45 @@ import bcrypt from "bcrypt";
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 
-export const signIn: RequestHandler = async (req: Request, res: Response) => {
+export const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const user = await prisma.admins.findFirst({
+    const user = await prisma.player.findFirst({
       where: { email: req.body.email },
     });
-    if (!user) return responseHandler(res, false, "user not found");
+    if (user) return responseHandler(res, false, "player already exists");
+
+    const password = await bcrypt.hash(
+      req.body.password,
+      constants.bcryptRounds
+    );
+
+    await prisma.player.create({
+      data: {
+        email: req.body.email,
+        displayName: req.body.displayName,
+        profilePhoto: req.body.profilePhoto,
+        PlayerInstitution: {
+          create: req.body.institutions.map((i: number) => ({
+            institutionId: i,
+          })),
+        },
+        password,
+        token: "",
+      },
+    });
+
+    responseHandler(res, true, "Successful");
+  } catch (e) {
+    responseHandler(res, false, "", undefined, e);
+  }
+};
+
+export const signIn: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const user = await prisma.player.findFirst({
+      where: { email: req.body.email },
+    });
+    if (!user) return responseHandler(res, false, "player not found");
 
     const authenticated = await bcrypt.compare(
       req.body.password,
@@ -22,7 +55,7 @@ export const signIn: RequestHandler = async (req: Request, res: Response) => {
       subject: String(user.id),
     });
 
-    await prisma.admins.update({
+    await prisma.player.update({
       where: {
         id: user.id,
       },
@@ -31,7 +64,7 @@ export const signIn: RequestHandler = async (req: Request, res: Response) => {
       },
     });
 
-    responseHandler(res, true, "Successful", { token, user });
+    responseHandler(res, true, "Successful", { token });
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }
@@ -39,7 +72,7 @@ export const signIn: RequestHandler = async (req: Request, res: Response) => {
 
 export const signOut: RequestHandler = async (req: Request, res: Response) => {
   try {
-    await prisma.admins.update({
+    await prisma.player.update({
       where: {
         id: req.user?.data?.id,
       },

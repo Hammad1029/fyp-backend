@@ -11,13 +11,13 @@ roleRouter.get(
   controllers.getRoles
 );
 
-roleRouter.post(
+roleRouter.put(
   "/",
   passport.authenticate(constants.passport.admin),
   controllers.updateRole
 );
 
-roleRouter.put(
+roleRouter.post(
   "/",
   passport.authenticate(constants.passport.admin),
   controllers.createRole

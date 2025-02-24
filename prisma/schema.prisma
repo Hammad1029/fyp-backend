@@ -102,6 +102,7 @@ model Game {
   id            Int            @id @default(autoincrement())
   name          String
   institutionId Int            @map("institutionId")
+  tags          String[]
   institution   Institution    @relation(fields: [institutionId], references: [id])
   GameQuestion  GameQuestion[]
   Attempt       Attempt[]

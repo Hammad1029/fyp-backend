@@ -1,32 +1,32 @@
-import * as controllers from "@/controllers/admin/users";
+import * as controllers from "@/controllers/admin/questions";
 import { Router } from "express";
 import passport from "passport";
 import * as constants from "@/utils/constants";
 
-const userRouter = Router();
+const questionRouter = Router();
 
-userRouter.get(
+questionRouter.get(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.getUsers
+  controllers.getQuestions
 );
 
-userRouter.put(
+questionRouter.put(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.updateUser
+  controllers.updateQuestion
 );
 
-userRouter.post(
+questionRouter.post(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.createUser
+  controllers.createQuestion
 );
 
-userRouter.delete(
+questionRouter.delete(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.deleteUser
+  controllers.deleteQuestion
 );
 
-export default userRouter;
+export default questionRouter;
