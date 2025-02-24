@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://abd:12345@localhost:5432/mindtrackdb"
 }
 
 model Permissions {

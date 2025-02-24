@@ -9,8 +9,9 @@ export const responseHandler = (
 ) => {
   if (error) {
     console.error(error);
-    res.status(200).json({ status: false, message: "Internal Server Error" });
+    res.status(500).json({ status: false, message: "Internal Server Error" });
   } else {
-    res.status(500).json({ status, message, data });
+
+    res.status(200).json({ status, message, data });
   }
 };
