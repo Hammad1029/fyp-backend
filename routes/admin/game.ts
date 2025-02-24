@@ -1,32 +1,32 @@
-import * as controllers from "@/controllers/admin/users";
+import * as controllers from "@/controllers/admin/game";
 import { Router } from "express";
 import passport from "passport";
 import * as constants from "@/utils/constants";
 
-const userRouter = Router();
+const gameRouter = Router();
 
-userRouter.get(
+gameRouter.get(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.getUsers
+  controllers.getGames
 );
 
-userRouter.put(
+gameRouter.put(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.updateUser
+  controllers.updateGame
 );
 
-userRouter.post(
+gameRouter.post(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.createUser
+  controllers.createGame
 );
 
-userRouter.delete(
+gameRouter.delete(
   "/",
   passport.authenticate(constants.passport.admin),
-  controllers.deleteUser
+  controllers.deleteGame
 );
 
-export default userRouter;
+export default gameRouter;
