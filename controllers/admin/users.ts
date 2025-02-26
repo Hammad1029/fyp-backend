@@ -18,11 +18,13 @@ export const createUser: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const foundRole = await prisma.permissions.findFirst({
+    const foundRole = await prisma.roles.findFirst({
       where: {
-        id: req.body.role_id,
+        id: req.body.roleId,
       },
     });
+    console.log("Request body:", req.body);
+    console.log("roleId:", req.body.roleId);
     if (!foundRole) return responseHandler(res, false, "role not found");
 
     const foundInstitution = await prisma.institution.findFirst({
