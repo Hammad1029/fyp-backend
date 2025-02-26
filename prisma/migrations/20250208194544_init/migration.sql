@@ -192,3 +192,8 @@ ALTER TABLE "Attempt" ADD CONSTRAINT "Attempt_playerId_fkey" FOREIGN KEY ("playe
 
 -- AddForeignKey
 ALTER TABLE "Attempt" ADD CONSTRAINT "Attempt_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+
+INSERT INTO roles (name) VALUES ('SuperAdmin') RETURNING id;
+INSERT INTO institutions (name) VALUES ('IBA') RETURNING id;

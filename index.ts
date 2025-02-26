@@ -4,10 +4,12 @@ import passport from "passport";
 import "@/utils/passport.js";
 import session from "express-session";
 import * as constants from "@/utils/constants.js";
+import cors from "cors";
+
 
 const app = express();
 const port = constants.env.port;
-
+app.use(cors()); // Allow all origins
 app.use(express.json());
 app.use(session({ secret: constants.env.sessionSecret }));
 app.use(passport.initialize());

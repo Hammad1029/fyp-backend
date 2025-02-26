@@ -83,7 +83,7 @@ export const deleteRole: RequestHandler = async (
         id: req.body.role_id,
       },
     });
-    if (!role) return responseHandler(res, false, "role not found");
+    if (!role) return responseHandler(res, false, "role not found ");
 
     await prisma.roles.delete({ where: { id: role.id } });
 
