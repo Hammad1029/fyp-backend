@@ -8,8 +8,10 @@ export const getQuestions: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const questions = await prisma.question.findMany();
-    responseHandler(res, true, "Successful", { roles: questions });
+    const questions = await prisma.question.findMany({
+      include: { Answer: true, GameQuestion: true },
+    });
+    responseHandler(res, true, "Successful", questions);
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }

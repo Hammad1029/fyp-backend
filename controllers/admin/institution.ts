@@ -8,8 +8,10 @@ export const getInstitution: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const institutions = await prisma.institution.findMany();
-    responseHandler(res, true, "Successful", { roles: institutions });
+    const institutions = await prisma.institution.findMany({
+      include: { Admins: true, Game: true, PlayerInstitution: true },
+    });
+    responseHandler(res, true, "Successful", institutions );
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }
@@ -74,7 +76,8 @@ export const deleteInstitution: RequestHandler = async (
         id: req.body.institution_id,
       },
     });
-    if (!institution) return responseHandler(res, false, "institution not found");
+    if (!institution)
+      return responseHandler(res, false, "institution not found");
 
     await prisma.roles.delete({ where: { id: institution.id } });
 

@@ -36,11 +36,13 @@ CREATE TABLE "RolePermissions" (
 
 -- CreateTable
 CREATE TABLE "Admins" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
     "roleId" INTEGER NOT NULL,
-    "organizationId" INTEGER NOT NULL,
+    "institutionId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -48,8 +50,8 @@ CREATE TABLE "Admins" (
 );
 
 -- CreateTable
-CREATE TABLE "Organization" (
-    "id" INTEGER NOT NULL,
+CREATE TABLE "Institution" (
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "logo" TEXT NOT NULL,
@@ -57,12 +59,12 @@ CREATE TABLE "Organization" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Institution_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Question" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
     "time" INTEGER NOT NULL,
     "difficulty" "Difficulty" NOT NULL DEFAULT 'MEDIUM',
@@ -75,7 +77,7 @@ CREATE TABLE "Question" (
 
 -- CreateTable
 CREATE TABLE "Answer" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
     "correct" BOOLEAN NOT NULL,
     "questionId" INTEGER NOT NULL,
@@ -87,9 +89,10 @@ CREATE TABLE "Answer" (
 
 -- CreateTable
 CREATE TABLE "Game" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "organizationId" INTEGER NOT NULL,
+    "institutionId" INTEGER NOT NULL,
+    "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -108,9 +111,10 @@ CREATE TABLE "GameQuestion" (
 
 -- CreateTable
 CREATE TABLE "Player" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
     "displayName" TEXT NOT NULL,
     "profilePhoto" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -122,16 +126,16 @@ CREATE TABLE "Player" (
 -- CreateTable
 CREATE TABLE "PlayerInstitution" (
     "playerId" INTEGER NOT NULL,
-    "organizationId" INTEGER NOT NULL,
+    "institutionId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "PlayerInstitution_pkey" PRIMARY KEY ("playerId","organizationId")
+    CONSTRAINT "PlayerInstitution_pkey" PRIMARY KEY ("playerId","institutionId")
 );
 
 -- CreateTable
 CREATE TABLE "Attempt" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "playerId" INTEGER NOT NULL,
     "gameId" INTEGER NOT NULL,
     "timeTaken" INTEGER NOT NULL,
@@ -152,7 +156,7 @@ CREATE UNIQUE INDEX "Roles_name_key" ON "Roles"("name");
 CREATE UNIQUE INDEX "Admins_email_key" ON "Admins"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Organization_email_key" ON "Organization"("email");
+CREATE UNIQUE INDEX "Institution_email_key" ON "Institution"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Player_email_key" ON "Player"("email");
@@ -167,13 +171,13 @@ ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_roleId_fkey" FOREI
 ALTER TABLE "Admins" ADD CONSTRAINT "Admins_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Admins" ADD CONSTRAINT "Admins_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Admins" ADD CONSTRAINT "Admins_institutionId_fkey" FOREIGN KEY ("institutionId") REFERENCES "Institution"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Answer" ADD CONSTRAINT "Answer_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game" ADD CONSTRAINT "Game_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Game" ADD CONSTRAINT "Game_institutionId_fkey" FOREIGN KEY ("institutionId") REFERENCES "Institution"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "GameQuestion" ADD CONSTRAINT "GameQuestion_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -185,15 +189,10 @@ ALTER TABLE "GameQuestion" ADD CONSTRAINT "GameQuestion_questionId_fkey" FOREIGN
 ALTER TABLE "PlayerInstitution" ADD CONSTRAINT "PlayerInstitution_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PlayerInstitution" ADD CONSTRAINT "PlayerInstitution_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PlayerInstitution" ADD CONSTRAINT "PlayerInstitution_institutionId_fkey" FOREIGN KEY ("institutionId") REFERENCES "Institution"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Attempt" ADD CONSTRAINT "Attempt_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Attempt" ADD CONSTRAINT "Attempt_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
-
-
-INSERT INTO roles (name) VALUES ('SuperAdmin') RETURNING id;
-INSERT INTO institutions (name) VALUES ('IBA') RETURNING id;

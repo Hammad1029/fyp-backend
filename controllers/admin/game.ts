@@ -5,8 +5,10 @@ import { Request, RequestHandler, Response } from "express";
 
 export const getGames: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const games = await prisma.game.findMany();
-    responseHandler(res, true, "Successful", { roles: games });
+    const games = await prisma.game.findMany({
+      include: { GameQuestion: true, institution: true, Attempt: true },
+    });
+    responseHandler(res, true, "Successful", games);
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }

@@ -6,8 +6,10 @@ import { bcryptRounds, defaultPassword } from "@/utils/constants";
 
 export const getUsers: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const users = await prisma.admins.findMany();
-    responseHandler(res, true, "Successful", { roles: users });
+    const users = await prisma.admins.findMany({
+      include: { institution: true, role: true },
+    });
+    responseHandler(res, true, "Successful", users);
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }
@@ -23,8 +25,6 @@ export const createUser: RequestHandler = async (
         id: req.body.roleId,
       },
     });
-    console.log("Request body:", req.body);
-    console.log("roleId:", req.body.roleId);
     if (!foundRole) return responseHandler(res, false, "role not found");
 
     const foundInstitution = await prisma.institution.findFirst({
@@ -83,6 +83,8 @@ export const updateUser: RequestHandler = async (
 
     await prisma.admins.update({
       data: {
+        name: req.body.name,
+        email: req.body.email,
         institutionId: foundInstitution.id,
         roleId: foundRole.id,
       },
@@ -107,9 +109,9 @@ export const deleteUser: RequestHandler = async (
         id: req.body.user_id,
       },
     });
-    if (!user) return responseHandler(res, false, "user not found");
+    if (!user || !req.body.user_id) return responseHandler(res, false, "user not found");
 
-    await prisma.admins.delete({ where: { id: user.id } });
+    await prisma.admins.delete({ where: { id: req.body.user_id } });
 
     responseHandler(res, true, "Successful");
   } catch (e) {

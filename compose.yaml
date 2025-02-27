@@ -1,0 +1,27 @@
+services:
+  fyp-postgres:
+    networks:
+      - fyp-net
+    image: postgres:15-alpine
+    container_name: fyp-postgres
+    environment:
+      POSTGRES_DB: fyp
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+    volumes:
+      - fyp_data:/postgresql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "admin" ]
+      interval: 5s
+      retries: 5
+
+volumes:
+  fyp_data:
+    name: fyp_data
+
+networks:
+  fyp-net:
+    name: fyp-net
+    external: false

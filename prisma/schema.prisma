@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://abd:12345@localhost:5432/mindtrackdb"
+  url      = "postgresql://admin:root@localhost:5432/fyp?schema=public"
 }
 
 model Permissions {

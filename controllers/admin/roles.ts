@@ -5,8 +5,10 @@ import { Request, RequestHandler, Response } from "express";
 
 export const getRoles: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const roles = await prisma.roles.findMany();
-    responseHandler(res, true, "Successful", { roles });
+    const roles = await prisma.roles.findMany({
+      include: { Admins: true, RolePermissions: true },
+    });
+    responseHandler(res, true, "Successful", roles);
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }

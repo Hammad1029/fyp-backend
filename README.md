@@ -14,4 +14,5 @@ how to run:
 npm i
 npm i -g ts-node tsx 
 npx prisma migrate dev --name init
+npx prisma db seed
 tsx index.js
