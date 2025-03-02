@@ -29,4 +29,10 @@ roleRouter.delete(
   controllers.deleteRole
 );
 
+roleRouter.get(
+  "/permissions",
+  passport.authenticate(constants.passport.admin),
+  controllers.getPermissions
+)
+
 export default roleRouter;

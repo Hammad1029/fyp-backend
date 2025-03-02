@@ -26,11 +26,14 @@ export const createRole: RequestHandler = async (
         },
       },
     });
-    if (!foundPermissions || foundPermissions.length !== req.body.length)
+    if (
+      !foundPermissions ||
+      foundPermissions.length !== req.body.permissions.length
+    )
       return responseHandler(res, false, "permissions not found");
 
     const createLinks = req.body.permissions.map((p: Permissions) => ({
-      permissionId: p.id,
+      permissionId: p,
     }));
     await prisma.roles.create({
       data: {
@@ -62,11 +65,15 @@ export const updateRole: RequestHandler = async (
     await prisma.roles.update({
       data: {
         name: req.body.name,
-        RolePermissions: {
-          set: req.body.permissions,
-        },
       },
       where: { id: role.id },
+    });
+    await prisma.rolePermissions.deleteMany({ where: { roleId: role.id } });
+    await prisma.rolePermissions.createMany({
+      data: req.body.permissions.map((p: number) => ({
+        roleId: role.id,
+        permissionId: p,
+      })),
     });
 
     responseHandler(res, true, "Successful");
@@ -87,9 +94,22 @@ export const deleteRole: RequestHandler = async (
     });
     if (!role) return responseHandler(res, false, "role not found ");
 
+    await prisma.rolePermissions.deleteMany({ where: { roleId: role.id } });
     await prisma.roles.delete({ where: { id: role.id } });
 
     responseHandler(res, true, "Successful");
+  } catch (e) {
+    responseHandler(res, false, "", undefined, e);
+  }
+};
+
+export const getPermissions: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const permissions = await prisma.permissions.findMany();
+    responseHandler(res, true, "Successful", permissions);
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }

@@ -55,13 +55,21 @@ model Institution {
   email             String              @unique
   logo              String
   Admins            Admins[]
-  type              String
+  type              InstitutionTypes    @relation(fields: [typeId], references: [id])
+  typeId            Int
   Game              Game[]
   PlayerInstitution PlayerInstitution[]
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
 
   @@map("Institution")
+}
+
+model InstitutionTypes {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  Institution Institution[]
 }
 
 model Question {
@@ -102,9 +110,11 @@ model Game {
   id            Int            @id @default(autoincrement())
   name          String
   institutionId Int            @map("institutionId")
-  tags          String[]
   institution   Institution    @relation(fields: [institutionId], references: [id])
+  tags          String[]
+  time          Int
   GameQuestion  GameQuestion[]
+  giveQuestions Int
   Attempt       Attempt[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

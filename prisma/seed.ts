@@ -5,6 +5,17 @@ const prisma = new PrismaClient();
 
 const main = async () => {
   try {
+    await prisma.rolePermissions.deleteMany();
+    await prisma.permissions.deleteMany();
+    await prisma.admins.deleteMany();
+    await prisma.roles.deleteMany();
+    await prisma.answer.deleteMany();
+    await prisma.gameQuestion.deleteMany();
+    await prisma.question.deleteMany();
+    await prisma.game.deleteMany();
+    await prisma.institution.deleteMany();
+    await prisma.institutionTypes.deleteMany();
+
     await prisma.permissions.createMany({
       data: [
         { name: "user-add" },
@@ -40,14 +51,24 @@ const main = async () => {
       },
     });
 
-    const institution = await prisma.institution.create({
-      data: {
-        name: "mindtrack",
-        email: "hammad1029@gmail.com",
-        type: "owner",
-        logo: "",
-      },
+    await prisma.institutionTypes.createMany({
+      data: [{ type: "Mindtrack" }, { type: "University" }],
     });
+
+    const mindtrackInstitutionType = await prisma.institutionTypes.findFirst({
+      where: { type: "Mindtrack" },
+    });
+    let institution;
+    if (mindtrackInstitutionType)
+      institution = await prisma.institution.create({
+        data: {
+          name: "mindtrack",
+          email: "hammad1029@gmail.com",
+          typeId: mindtrackInstitutionType.id,
+          logo: "",
+        },
+      });
+    else throw Error("institution type not found");
 
     const password = await bcrypt.hash(defaultPassword, bcryptRounds);
     const superUser = await prisma.admins.create({
@@ -58,6 +79,53 @@ const main = async () => {
         institutionId: institution.id,
         roleId: superRole.id,
         token: "",
+      },
+    });
+
+    const q1 = await prisma.question.create({
+      data: {
+        content: "q1",
+        time: 50,
+        difficulty: "EASY",
+        type: "TEXT",
+        Answer: {
+          create: [
+            { content: "a1", correct: false },
+            { content: "a2", correct: true },
+            { content: "a3", correct: false },
+            { content: "a4", correct: false },
+          ],
+        },
+      },
+    });
+
+    const q2 = await prisma.question.create({
+      data: {
+        content: "q2",
+        time: 10,
+        difficulty: "EASY",
+        type: "TEXT",
+        Answer: {
+          create: [
+            { content: "b1", correct: false },
+            { content: "b2", correct: true },
+            { content: "b3", correct: false },
+            { content: "b4", correct: false },
+          ],
+        },
+      },
+    });
+
+    const game = await prisma.game.create({
+      data: {
+        name: "game",
+        institutionId: institution.id,
+        tags: ["idk", "game"],
+        time: 30,
+        giveQuestions: 2,
+        GameQuestion: {
+          createMany: { data: [{ questionId: q1.id }, { questionId: q2.id }] },
+        },
       },
     });
 

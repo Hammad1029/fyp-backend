@@ -29,4 +29,10 @@ institutionRouter.delete(
   controllers.deleteInstitution
 );
 
+institutionRouter.get(
+  "/types",
+  passport.authenticate(constants.passport.admin),
+  controllers.getInstitutionTypes
+)
+
 export default institutionRouter;
