@@ -23,6 +23,9 @@ export const createGame: RequestHandler = async (
       data: {
         name: req.body.name,
         institutionId: req.body.institutionId,
+        tags: req.body.tags,
+        time: req.body.time,
+        giveQuestions: req.body.giveQuestions,
         GameQuestion: {
           create: req.body.questions.map((q: Number) => ({
             questionId: q,
@@ -42,7 +45,7 @@ export const updateGame: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const game = await prisma.question.findFirst({
+    const game = await prisma.game.findFirst({
       where: {
         id: req.body.game_id,
       },
@@ -55,8 +58,11 @@ export const updateGame: RequestHandler = async (
 
     await prisma.game.create({
       data: {
-        name: req.body.name,
-        institutionId: req.body.institutionId,
+        name: req.body.name || game.name,
+        institutionId: req.body.institutionId || game.institutionId,
+        tags: req.body.tags || game.tags,
+        time: req.body.time || game.time,
+        giveQuestions: req.body.giveQuestions || game.giveQuestions,
         GameQuestion: {
           create: req.body.questions.map((q: Number) => ({
             questionId: q,

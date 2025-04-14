@@ -88,6 +88,9 @@ const main = async () => {
         time: 50,
         difficulty: "EASY",
         type: "TEXT",
+        MediaURL: "",
+        SkillSet: "Understanding implied meaning",
+        AssociatedSkill: "Listening & Comprehension",
         Answer: {
           create: [
             { content: "a1", correct: false },
@@ -99,32 +102,15 @@ const main = async () => {
       },
     });
 
-    const q2 = await prisma.question.create({
-      data: {
-        content: "q2",
-        time: 10,
-        difficulty: "EASY",
-        type: "TEXT",
-        Answer: {
-          create: [
-            { content: "b1", correct: false },
-            { content: "b2", correct: true },
-            { content: "b3", correct: false },
-            { content: "b4", correct: false },
-          ],
-        },
-      },
-    });
-
     const game = await prisma.game.create({
       data: {
         name: "game",
         institutionId: institution.id,
         tags: ["idk", "game"],
         time: 30,
-        giveQuestions: 2,
+        giveQuestions: 1,
         GameQuestion: {
-          createMany: { data: [{ questionId: q1.id }, { questionId: q2.id }] },
+          createMany: { data: [{ questionId: q1.id }] },
         },
       },
     });

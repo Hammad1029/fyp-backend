@@ -11,22 +11,4 @@ questionRouter.get(
   controllers.getQuestions
 );
 
-questionRouter.put(
-  "/",
-  passport.authenticate(constants.passport.admin),
-  controllers.updateQuestion
-);
-
-questionRouter.post(
-  "/",
-  passport.authenticate(constants.passport.admin),
-  controllers.createQuestion
-);
-
-questionRouter.delete(
-  "/",
-  passport.authenticate(constants.passport.admin),
-  controllers.deleteQuestion
-);
-
 export default questionRouter;

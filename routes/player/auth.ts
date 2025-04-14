@@ -12,5 +12,6 @@ authRouter.get(
   passport.authenticate(constants.passport.player),
   controllers.signOut
 );
+authRouter.post("/forgot-password", controllers.forgetPassword);
 
 export default authRouter;

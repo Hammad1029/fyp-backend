@@ -73,27 +73,18 @@ model InstitutionTypes {
 }
 
 model Question {
-  id           Int            @id @default(autoincrement())
-  content      String
-  time         Int
-  difficulty   Difficulty     @default(MEDIUM)
-  Answer       Answer[]
-  type         QuestionType   @default(TEXT)
-  GameQuestion GameQuestion[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
-
-enum QuestionType {
-  TEXT
-  IMAGE
-  AUDIO
+  id              Int            @id @default(autoincrement())
+  content         String
+  time            Int
+  difficulty      String
+  Answer          Answer[]
+  MediaURL        String
+  type            String
+  SkillSet        String
+  AssociatedSkill String
+  GameQuestion    GameQuestion[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model Answer {
@@ -138,6 +129,7 @@ model Player {
   token             String
   displayName       String
   profilePhoto      String
+  education         String
   PlayerInstitution PlayerInstitution[]
   Attempt           Attempt[]
   createdAt         DateTime            @default(now())
@@ -162,8 +154,49 @@ model Attempt {
   playerId  Int
   game      Game     @relation(fields: [gameId], references: [id])
   gameId    Int
-  timeTaken Int
-  stats     String
+  timeTaken Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  AttemptDetails AttemptDetails[]
+}
+
+model AttemptDetails {
+  id Int @id @default(autoincrement())
+
+  attempt   Attempt @relation(fields: [attemptId], references: [id])
+  attemptId Int
+
+  StartTime DateTime
+  EndTime   DateTime?
+
+  easyTotal   Int @default(0)
+  easyCorrect Int @default(0)
+
+  midTotal   Int @default(0)
+  midCorrect Int @default(0)
+
+  mediumTotal   Int @default(0)
+  mediumCorrect Int @default(0)
+
+  hardTotal   Int @default(0)
+  hardCorrect Int @default(0)
+
+  advancedTotal   Int @default(0)
+  advancedCorrect Int @default(0)
+
+  exceptionalTotal   Int @default(0)
+  exceptionalCorrect Int @default(0)
+
+  textualTotal   Int @default(0)
+  textualCorrect Int @default(0)
+
+  imageTotal   Int @default(0)
+  imageCorrect Int @default(0)
+
+  auditoryTotal   Int @default(0)
+  auditoryCorrect Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

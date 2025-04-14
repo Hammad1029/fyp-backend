@@ -1,8 +1,9 @@
 import prisma from "@/utils/prisma";
-import { responseHandler } from "@/utils/utils";
+import { createRandomString, responseHandler } from "@/utils/utils";
 import { Request, RequestHandler, Response } from "express";
 import bcrypt from "bcrypt";
 import { bcryptRounds, defaultPassword } from "@/utils/constants";
+import sendEmail from "@/utils/email";
 
 export const getUsers: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -35,7 +36,8 @@ export const createUser: RequestHandler = async (
     if (!foundInstitution)
       return responseHandler(res, false, "institution not found");
 
-    const password = await bcrypt.hash(defaultPassword, bcryptRounds);
+    const newPassword = createRandomString(8);
+    const password = await bcrypt.hash(newPassword, bcryptRounds);
 
     await prisma.admins.create({
       data: {
@@ -47,6 +49,19 @@ export const createUser: RequestHandler = async (
         token: "",
       },
     });
+
+    const mailError = await sendEmail({
+      to: [req.body.email],
+      subject: `Welcome to mindtrack ${req.body.name}`,
+      body: `<ul style="line-height: 1.6;">
+              <li><strong>Name:</strong> ${req.body.name}</li>
+              <li><strong>Email:</strong> ${req.body.email}</li>
+              <li><strong>Password:</stronz> ${newPassword}</li>
+              <li><strong>Institution:</strong> ${foundInstitution.name}</li>
+              <li><strong>Role:</strong> ${foundRole.name}</li>
+            </ul>`,
+    });
+    if (mailError) throw new Error(mailError);
 
     responseHandler(res, true, "Successful");
   } catch (e) {
@@ -109,7 +124,8 @@ export const deleteUser: RequestHandler = async (
         id: req.body.user_id,
       },
     });
-    if (!user || !req.body.user_id) return responseHandler(res, false, "user not found");
+    if (!user || !req.body.user_id)
+      return responseHandler(res, false, "user not found");
 
     await prisma.admins.delete({ where: { id: req.body.user_id } });
 
