@@ -65,39 +65,17 @@ export const nextQuestion: RequestHandler = async (
   try {
     const attempt = await prisma.attempt.findFirst({
       where: { id: req.body.id },
-      include: { GameQuestion: { include: { question: true } } },
+      include: {
+        game: { include: { GameQuestion: { include: { question: true } } } },
+      },
     });
     const user = await prisma.player.findFirst({
       where: { id: req.user?.data?.id },
     });
-    if (!attempt) responseHandler(res, false, "Game ID not found");
+    if (!attempt) responseHandler(res, false, "Attempt ID not found");
     else if (!user) responseHandler(res, false, "User ID not found");
     else {
-      const attempt = await prisma.attempt.create({
-        data: {
-          gameId: attempt.id,
-          playerId: user.id,
-        },
-      });
-      const attemptDetails = await prisma.attemptDetails.create({
-        data: {
-          attemptId: attempt.id,
-          StartTime: new Date(),
-        },
-      });
-      const stats = await calculateStats(user.id, attempt.id);
-      const nextQuestion = await mockStartGame(
-        attempt.id,
-        attempt.giveQuestions,
-        attempt.GameQuestion.map((q) => q.question),
-        user.education,
-        stats
-      );
-      responseHandler(res, true, "Successful", {
-        attempt,
-        attemptDetails,
-        nextQuestion,
-      });
+      
     }
   } catch (e) {
     responseHandler(res, false, "", undefined, e);

@@ -1,4 +1,4 @@
-import { bcryptRounds, defaultPassword } from "@/utils/constants";
+import { bcryptRounds, defaultPassword } from "../utils/constants";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
@@ -12,6 +12,8 @@ const main = async () => {
     await prisma.answer.deleteMany();
     await prisma.gameQuestion.deleteMany();
     await prisma.question.deleteMany();
+    await prisma.attemptDetails.deleteMany();
+    await prisma.attempt.deleteMany();
     await prisma.game.deleteMany();
     await prisma.institution.deleteMany();
     await prisma.institutionTypes.deleteMany();
@@ -63,7 +65,7 @@ const main = async () => {
       institution = await prisma.institution.create({
         data: {
           name: "mindtrack",
-          email: "hammad1029@gmail.com",
+          email: "admin@admin.com",
           typeId: mindtrackInstitutionType.id,
           logo: "",
         },

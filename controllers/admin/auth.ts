@@ -9,6 +9,11 @@ export const signIn: RequestHandler = async (req: Request, res: Response) => {
   try {
     const user = await prisma.admins.findFirst({
       where: { email: req.body.email },
+      include: {
+        role: {
+          include: { RolePermissions: { include: { permission: true } } },
+        },
+      },
     });
     if (!user) return responseHandler(res, false, "user not found");
 

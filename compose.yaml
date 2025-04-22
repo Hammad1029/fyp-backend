@@ -1,25 +1,47 @@
 services:
   fyp-postgres:
-    networks:
-      - fyp-net
-    image: postgres:15-alpine
+    image: postgres:15
     container_name: fyp-postgres
+    restart: always
     environment:
-      POSTGRES_DB: fyp
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: root
-    volumes:
-      - fyp_data:/postgresql
+      - POSTGRES_DB=fyp
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
     ports:
       - "5432:5432"
+    networks:
+      - fyp-net
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "admin" ]
+      test: ["CMD-SHELL", "pg_isready -U admin -d fyp"]
       interval: 5s
-      retries: 5
+      timeout: 2s
+      retries: 20
+    volumes:
+      - fyp-data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  server:
+    image: hammad1029/fyp-backend:latest
+    container_name: fyp-backend
+    ports:
+      - '3001:3001'
+    stdin_open: true
+    tty: true
+    depends_on:
+      fyp-postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - fyp-net
 
 volumes:
-  fyp_data:
-    name: fyp_data
+  fyp-data:
+    name: fyp-data
 
 networks:
   fyp-net:

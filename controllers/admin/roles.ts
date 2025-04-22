@@ -62,12 +62,25 @@ export const updateRole: RequestHandler = async (
     });
     if (!role) return responseHandler(res, false, "role not found");
 
-    await prisma.roles.update({
-      data: {
-        name: req.body.name,
-      },
-      where: { id: role.id },
-    });
+    if (req.body.name !== role.name) {
+      const roleNameExists = await prisma.roles.findMany({
+        where: { name: req.body.name },
+      });
+      if (roleNameExists.length > 0)
+        return responseHandler(
+          res,
+          false,
+          `role with name ${req.body.name} already exists`
+        );
+
+      await prisma.roles.update({
+        data: {
+          name: req.body.name,
+        },
+        where: { id: role.id },
+      });
+    }
+    
     await prisma.rolePermissions.deleteMany({ where: { roleId: role.id } });
     await prisma.rolePermissions.createMany({
       data: req.body.permissions.map((p: number) => ({
