@@ -7,6 +7,9 @@ export const getGames: RequestHandler = async (req: Request, res: Response) => {
   try {
     const games = await prisma.game.findMany({
       include: { GameQuestion: true, institution: true, Attempt: true },
+      where: {
+        name: { contains: String(req.query.search || "") },
+      },
     });
     responseHandler(res, true, "Successful", games);
   } catch (e) {

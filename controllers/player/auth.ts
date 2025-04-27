@@ -2,7 +2,7 @@ import * as constants from "@/utils/constants";
 import sendEmail from "@/utils/email";
 import prisma from "@/utils/prisma";
 import { createRandomString, responseHandler } from "@/utils/utils";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 

@@ -39,7 +39,14 @@ COPY --from=builder /app/tsconfig.json ./tsconfig.json
 ENV NODE_ENV=production
 
 # Install wait-on and tsx for database readiness check and running seed
-RUN npm install -g wait-on tsx tsconfig-paths
+RUN npm install -g tsx tsconfig-paths
+
+EXPOSE 3001
 
 # Create startup command that waits for DB and runs migrations before starting app
-CMD /bin/sh -c "wait-on -t 60000 tcp:fyp-postgres:5432 && npx prisma migrate deploy && npx prisma generate && NODE_OPTIONS='--require tsconfig-paths/register' npx tsx prisma/seed.ts && node dist/index.js"
+CMD /bin/sh -c "\
+  echo 'Running: generating prisma schema' && npx prisma generate && \
+  echo 'Running: migrating prisma deployment' && npx prisma migrate deploy && \
+  echo 'Running: seeding database' && npm run seed && \
+  echo 'Running: starting server' && node dist/index.js \
+"

@@ -1,7 +1,7 @@
 import * as constants from "@/utils/constants";
 import prisma from "@/utils/prisma";
 import { responseHandler } from "@/utils/utils";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 

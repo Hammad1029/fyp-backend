@@ -7,6 +7,9 @@ export const getRoles: RequestHandler = async (req: Request, res: Response) => {
   try {
     const roles = await prisma.roles.findMany({
       include: { Admins: true, RolePermissions: true },
+      where: {
+        name: { contains: String(req.query.search || "") },
+      },
     });
     responseHandler(res, true, "Successful", roles);
   } catch (e) {
@@ -80,7 +83,7 @@ export const updateRole: RequestHandler = async (
         where: { id: role.id },
       });
     }
-    
+
     await prisma.rolePermissions.deleteMany({ where: { roleId: role.id } });
     await prisma.rolePermissions.createMany({
       data: req.body.permissions.map((p: number) => ({

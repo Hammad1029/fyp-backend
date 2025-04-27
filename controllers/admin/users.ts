@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma";
 import { createRandomString, responseHandler } from "@/utils/utils";
 import { Request, RequestHandler, Response } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { bcryptRounds, defaultPassword } from "@/utils/constants";
 import sendEmail from "@/utils/email";
 
@@ -9,6 +9,12 @@ export const getUsers: RequestHandler = async (req: Request, res: Response) => {
   try {
     const users = await prisma.admins.findMany({
       include: { institution: true, role: true },
+      where: {
+        OR: [
+          { name: { contains: String(req.query.search || "") } },
+          { email: { contains: String(req.query.search || "") } },
+        ],
+      },
     });
     responseHandler(res, true, "Successful", users);
   } catch (e) {
@@ -21,6 +27,14 @@ export const createUser: RequestHandler = async (
   res: Response
 ) => {
   try {
+    const exists = await prisma.admins.findFirst({
+      where: {
+        email: req.body.email,
+      },
+    });
+    if (exists)
+      return responseHandler(res, false, "user with email already exists");
+
     const foundRole = await prisma.roles.findFirst({
       where: {
         id: req.body.roleId,

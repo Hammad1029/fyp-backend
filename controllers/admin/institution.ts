@@ -15,6 +15,12 @@ export const getInstitution: RequestHandler = async (
         PlayerInstitution: true,
         type: true,
       },
+      where: {
+        OR: [
+          { name: { contains: String(req.query.search || "") } },
+          { email: { contains: String(req.query.search || "") } },
+        ],
+      },
     });
     responseHandler(res, true, "Successful", institutions);
   } catch (e) {
