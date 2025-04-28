@@ -60,7 +60,7 @@ export const updateRole: RequestHandler = async (
   try {
     const role = await prisma.roles.findFirst({
       where: {
-        id: req.body.role_id,
+        id: req.body.roleId,
       },
     });
     if (!role) return responseHandler(res, false, "role not found");
@@ -105,7 +105,7 @@ export const deleteRole: RequestHandler = async (
   try {
     const role = await prisma.roles.findFirst({
       where: {
-        id: req.body.role_id,
+        id: req.body.roleId,
       },
     });
     if (!role) return responseHandler(res, false, "role not found ");

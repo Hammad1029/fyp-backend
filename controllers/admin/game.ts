@@ -26,8 +26,10 @@ export const createGame: RequestHandler = async (
       data: {
         name: req.body.name,
         institutionId: req.body.institutionId,
-        tags: req.body.tags,
-        time: req.body.time,
+        tags: Array.isArray(req.body.tags)
+          ? req.body.tags
+          : req.body.tags.split(","),
+        time: Number(req.body.time),
         giveQuestions: req.body.giveQuestions,
         GameQuestion: {
           create: req.body.questions.map((q: Number) => ({

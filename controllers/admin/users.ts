@@ -95,9 +95,9 @@ export const updateUser: RequestHandler = async (
     });
     if (!user) return responseHandler(res, false, "user not found");
 
-    const foundRole = await prisma.permissions.findFirst({
+    const foundRole = await prisma.roles.findFirst({
       where: {
-        id: req.body.role_id,
+        id: req.body.roleId,
       },
     });
     if (!foundRole) return responseHandler(res, false, "role not found");

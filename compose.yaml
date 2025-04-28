@@ -24,32 +24,32 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  fyp-backend:
-    image: hammad1029/fyp-backend:latest
-    container_name: fyp-backend
-    ports:
-      - '3001:3001'
-    stdin_open: true
-    tty: true
-    depends_on:
-      fyp-postgres:
-        condition: service_healthy
-    env_file:
-      - /home/hammaduh/dev/fyp/backend/.env
-    networks:
-      - fyp-net
+  # fyp-backend:
+  #   image: hammad1029/fyp-backend:latest
+  #   container_name: fyp-backend
+  #   ports:
+  #     - '3001:3001'
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     fyp-postgres:
+  #       condition: service_healthy
+  #   env_file:
+  #     - /home/hammaduh/dev/fyp/backend/.env
+  #   networks:
+  #     - fyp-net
 
-  fyp-frontend:
-    image: hammad1029/fyp-frontend:latest
-    container_name: fyp-frontend
-    ports:
-      - '3000:3000'
-    stdin_open: true
-    tty: true
-    env_file:
-      - /home/hammaduh/dev/fyp/mindtrack2/.env
-    networks:
-      - fyp-net
+  # fyp-frontend:
+  #   image: hammad1029/fyp-frontend:latest
+  #   container_name: fyp-frontend
+  #   ports:
+  #     - '3000:3000'
+  #   stdin_open: true
+  #   tty: true
+  #   env_file:
+  #     - /home/hammaduh/dev/fyp/mindtrack2/.env
+  #   networks:
+  #     - fyp-net
 
 volumes:
   fyp-data:
