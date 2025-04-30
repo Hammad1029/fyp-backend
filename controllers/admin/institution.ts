@@ -1,6 +1,5 @@
 import prisma from "@/utils/prisma";
 import { responseHandler } from "@/utils/utils";
-import { Permissions } from "@prisma/client";
 import { Request, RequestHandler, Response } from "express";
 
 export const getInstitution: RequestHandler = async (
