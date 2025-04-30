@@ -18,6 +18,14 @@ export const signUp: RequestHandler = async (req: Request, res: Response) => {
       constants.bcryptRounds
     );
 
+    const mindtrackInstitution = await prisma.institution.findFirst({
+      where: {
+        type: { type: "Mindtrack" },
+      },
+    });
+    if (!mindtrackInstitution)
+      return responseHandler(res, false, "mindtrack institution not found");
+
     await prisma.player.create({
       data: {
         email: req.body.email,
@@ -25,9 +33,12 @@ export const signUp: RequestHandler = async (req: Request, res: Response) => {
         profilePhoto: req.body.profilePhoto,
         education: req.body.education,
         PlayerInstitution: {
-          create: req.body.institutions.map((i: number) => ({
-            institutionId: i,
-          })),
+          create: [
+            ...req.body.institutions.map((i: number) => ({
+              institutionId: i,
+            })),
+            mindtrackInstitution.id,
+          ],
         },
         password,
         token: "",

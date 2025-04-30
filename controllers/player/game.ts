@@ -1,11 +1,19 @@
-import { mockStartGame } from "@/model/interface";
 import prisma from "@/utils/prisma";
-import { calculateStats, responseHandler } from "@/utils/utils";
+import { calculateStats, getPlayerData, responseHandler } from "@/utils/utils";
 import { Request, RequestHandler, Response } from "express";
+import axios from "axios";
 
 export const getGames: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const games = await prisma.game.findMany();
+    const player = await getPlayerData(req.user?.data?.id);
+    if (!player) return responseHandler(res, false, "player not found");
+    const games = await prisma.game.findMany({
+      where: {
+        institutionId: {
+          in: player.PlayerInstitution.map((p) => p.institutionId),
+        },
+      },
+    });
     responseHandler(res, true, "Successful", { games });
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
@@ -18,7 +26,7 @@ export const startGame: RequestHandler = async (
 ) => {
   try {
     const game = await prisma.game.findFirst({
-      where: { id: req.body.id },
+      where: { id: req.body.gameId },
       include: { GameQuestion: { include: { question: true } } },
     });
     const user = await prisma.player.findFirst({
@@ -40,17 +48,28 @@ export const startGame: RequestHandler = async (
         },
       });
       const stats = await calculateStats(user.id, attempt.id);
-      const nextQuestion = await mockStartGame(
-        attempt.id,
-        game.giveQuestions,
-        game.GameQuestion.map((q) => q.question),
-        user.education,
-        stats
-      );
+      // const modelReq = {
+      //   user_id: String(user.id),
+      //   background: user.education,
+      //   question_pool: game.GameQuestion.map((q) => ({
+      //     id: q.question.id,
+      //     modality: q.question.modality,
+      //     difficulty: q.question.difficulty,
+      //   })),
+      //   question_count: game.giveQuestions,
+      //   previous_statistics: stats,
+      // };
+      // const modelRes = await axios.post(
+      //   `${process.env.MODEL_URL}/start_game`,
+      //   modelReq
+      // );
+      const modelRes = { data: { status: true, sessionId: "djsaldjlsad" } };
+      if (!modelRes.data?.status)
+        return responseHandler(res, false, "could not start game");
       responseHandler(res, true, "Successful", {
         attempt,
         attemptDetails,
-        nextQuestion,
+        modelRes,
       });
     }
   } catch (e) {
@@ -64,7 +83,7 @@ export const nextQuestion: RequestHandler = async (
 ) => {
   try {
     const attempt = await prisma.attempt.findFirst({
-      where: { id: req.body.id },
+      where: { id: req.body.attemptId },
       include: {
         game: { include: { GameQuestion: { include: { question: true } } } },
       },
@@ -72,10 +91,45 @@ export const nextQuestion: RequestHandler = async (
     const user = await prisma.player.findFirst({
       where: { id: req.user?.data?.id },
     });
-    if (!attempt) responseHandler(res, false, "Attempt ID not found");
-    else if (!user) responseHandler(res, false, "User ID not found");
+    if (!attempt) return responseHandler(res, false, "Attempt ID not found");
+    else if (!user) return responseHandler(res, false, "User ID not found");
     else {
-      
+      const previousQuestion = await prisma.question.findUnique({
+        where: { id: req.body.previousQuestionId },
+        include: { Answer: true },
+      });
+      if (!previousQuestion)
+        return responseHandler(res, false, "Previous question not found");
+      const correctAnswer = previousQuestion?.Answer.find((a) => a.correct);
+      const modelReq = {
+        sessionId: req.body.sessionId,
+        previousQuestion: previousQuestion.id,
+        correct: correctAnswer
+          ? correctAnswer.id === req.body.answerId.toLowerCase()
+          : false,
+      };
+      // const modelRes = await axios.post(
+      //   `${process.env.MODEL_URL}/start_game`,
+      //   modelReq
+      // );
+      const modelRes = {
+        data: {
+          status: true,
+          question_id: 4,
+          modality: "textual",
+          difficulty: "mid",
+          index: 1,
+          total: 10,
+        },
+      };
+      if (!modelRes.data?.status)
+        return responseHandler(res, false, "could not get next question");
+      const question = await prisma.question.findUnique({
+        where: { id: modelRes.data.question_id },
+      });
+      if (!question)
+        return responseHandler(res, false, "next question not found");
+      responseHandler(res, true, "Successful", { question, modelRes });
     }
   } catch (e) {
     responseHandler(res, false, "", undefined, e);

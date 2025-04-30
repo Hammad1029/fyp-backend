@@ -124,7 +124,7 @@ async function main() {
         content: "q1",
         time: 50,
         difficulty: "EASY",
-        type: "TEXT",
+        modality: "textual",
         MediaURL: "",
         SkillSet: "Understanding implied meaning",
         AssociatedSkill: "Listening & Comprehension",

@@ -7,7 +7,6 @@ const institutionRouter = Router();
 
 institutionRouter.get(
   "/",
-  passport.authenticate(constants.passport.player),
   controllers.getInstitution
 );
 

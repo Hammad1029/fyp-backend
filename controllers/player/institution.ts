@@ -9,9 +9,6 @@ export const getInstitution: RequestHandler = async (
   try {
     const institutions = await prisma.institution.findMany({
       include: {
-        Admins: true,
-        Game: true,
-        PlayerInstitution: true,
         type: true,
       },
       where: {

@@ -1,5 +1,5 @@
 import prisma from "@/utils/prisma";
-import { responseHandler } from "@/utils/utils";
+import { calculateStats, getPlayerData, responseHandler } from "@/utils/utils";
 import { Request, RequestHandler, Response } from "express";
 
 export const getProfile: RequestHandler = async (
@@ -7,14 +7,10 @@ export const getProfile: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const user = await prisma.player.findFirst({
-      where: {
-        id: req.user?.data?.id,
-      },
-    });
-    if (!user) return responseHandler(res, false, "user not found");
-
-    responseHandler(res, true, "Successful", { user });
+    const player = await getPlayerData(req.user?.data?.id);
+    if (!player) return responseHandler(res, false, "player not found");
+    const stats = await calculateStats(player.id);
+    responseHandler(res, true, "Successful", { player, stats });
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }

@@ -129,7 +129,7 @@ model Player {
   token             String
   displayName       String
   profilePhoto      String
-  education         String
+  education         Int
   PlayerInstitution PlayerInstitution[]
   Attempt           Attempt[]
   createdAt         DateTime            @default(now())
