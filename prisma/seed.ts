@@ -27,7 +27,9 @@ async function main() {
       prisma.institutionTypes.deleteMany(),
     ];
 
-    await Promise.all(deleteOperations);
+    for (const o of deleteOperations) {
+      await o;
+    }
     console.log("Database cleaned successfully");
 
     // Create permissions

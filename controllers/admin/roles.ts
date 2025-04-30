@@ -110,6 +110,18 @@ export const deleteRole: RequestHandler = async (
     });
     if (!role) return responseHandler(res, false, "role not found ");
 
+    const roleAssignees = await prisma.admins.findMany({
+      where: {
+        roleId: req.body.roleId,
+      },
+    });
+    if (roleAssignees.length > 0)
+      return responseHandler(
+        res,
+        false,
+        `Role assigned to ${roleAssignees.length} users`
+      );
+
     await prisma.rolePermissions.deleteMany({ where: { roleId: role.id } });
     await prisma.roles.delete({ where: { id: role.id } });
 
