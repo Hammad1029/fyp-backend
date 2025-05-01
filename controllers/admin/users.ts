@@ -135,13 +135,13 @@ export const deleteUser: RequestHandler = async (
   try {
     const user = await prisma.admins.findFirst({
       where: {
-        id: req.body.user_id,
+        id: req.body.userId,
       },
     });
-    if (!user || !req.body.user_id)
+    if (!user || !req.body.userId)
       return responseHandler(res, false, "user not found");
 
-    await prisma.admins.delete({ where: { id: req.body.user_id } });
+    await prisma.admins.delete({ where: { id: req.body.userId } });
 
     responseHandler(res, true, "Successful");
   } catch (e) {

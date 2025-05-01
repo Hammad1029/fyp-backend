@@ -60,7 +60,7 @@ export const updateInstitution: RequestHandler = async (
   try {
     const institution = await prisma.institution.findFirst({
       where: {
-        id: req.body.institution_id,
+        id: req.body.institutionId,
       },
     });
     if (!institution)
@@ -95,7 +95,7 @@ export const deleteInstitution: RequestHandler = async (
   try {
     const institution = await prisma.institution.findFirst({
       where: {
-        id: req.body.institution_id,
+        id: req.body.institutionId,
       },
     });
     if (!institution)

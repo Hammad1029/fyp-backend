@@ -28,7 +28,7 @@ export const createGame: RequestHandler = async (
         institutionId: req.body.institutionId,
         tags: Array.isArray(req.body.tags)
           ? req.body.tags
-          : req.body.tags.split(","),
+          : String(req.body.tags).split(","),
         time: Number(req.body.time),
         giveQuestions: req.body.giveQuestions,
         GameQuestion: {
@@ -52,7 +52,7 @@ export const updateGame: RequestHandler = async (
   try {
     const game = await prisma.game.findFirst({
       where: {
-        id: req.body.game_id,
+        id: req.body.gameId,
       },
     });
     if (!game) return responseHandler(res, false, "game not found");
@@ -61,11 +61,13 @@ export const updateGame: RequestHandler = async (
       where: { gameId: game.id },
     });
 
-    await prisma.game.create({
+    const tags = req.body.tags || game.tags;
+    await prisma.game.update({
+      where: { id: game.id },
       data: {
         name: req.body.name || game.name,
         institutionId: req.body.institutionId || game.institutionId,
-        tags: req.body.tags || game.tags,
+        tags: Array.isArray(tags) ? tags : String(tags).split(","),
         time: req.body.time || game.time,
         giveQuestions: req.body.giveQuestions || game.giveQuestions,
         GameQuestion: {
@@ -86,14 +88,18 @@ export const deleteGame: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const game = await prisma.question.findFirst({
+    const game = await prisma.game.findFirst({
       where: {
-        id: req.body.game_id,
+        id: req.body.gameId,
       },
     });
     if (!game) return responseHandler(res, false, "game not found");
 
-    await prisma.game.deleteMany({
+    await prisma.gameQuestion.deleteMany({
+      where: { gameId: game.id },
+    });
+
+    await prisma.game.delete({
       where: { id: game.id },
     });
 
