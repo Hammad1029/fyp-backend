@@ -84,7 +84,7 @@ model Question {
   AssociatedSkill String
   GameQuestion    GameQuestion[]
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  updatedAt       DateTime       @default(now()) @updatedAt
 }
 
 model Answer {
@@ -94,7 +94,7 @@ model Answer {
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model Game {

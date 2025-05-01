@@ -69,6 +69,11 @@ export const startGame: RequestHandler = async (
       // const modelRes = { data: { status: true, sessionId: "djsaldjlsad" } };
       if (modelRes.status !== 200)
         return responseHandler(res, false, "could not start game");
+      const question = await prisma.question.findUnique({
+        where: { id: modelRes.data.current_question.id },
+      });
+      if (!question)
+        return responseHandler(res, false, "next question not found");
       responseHandler(res, true, "Successful", {
         attempt,
         attemptDetails,
