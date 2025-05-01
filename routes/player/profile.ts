@@ -10,6 +10,10 @@ profileRouter.get(
   passport.authenticate(constants.passport.player),
   controllers.getProfile
 );
-profileRouter.post("/", controllers.updateProfile);
+profileRouter.post(
+  "/",
+  passport.authenticate(constants.passport.player),
+  controllers.updateProfile
+);
 
 export default profileRouter;

@@ -29,16 +29,17 @@ export const startGame: RequestHandler = async (
       where: { id: req.body.gameId },
       include: { GameQuestion: { include: { question: true } } },
     });
-    const user = await prisma.player.findFirst({
+    const player = await prisma.player.findFirst({
       where: { id: req.user?.data?.id },
+      include: { Attempt: true },
     });
     if (!game) responseHandler(res, false, "Game ID not found");
-    else if (!user) responseHandler(res, false, "User ID not found");
+    else if (!player) responseHandler(res, false, "User ID not found");
     else {
       const attempt = await prisma.attempt.create({
         data: {
           gameId: game.id,
-          playerId: user.id,
+          playerId: player.id,
         },
       });
       const attemptDetails = await prisma.attemptDetails.create({
@@ -47,21 +48,23 @@ export const startGame: RequestHandler = async (
           StartTime: new Date(),
         },
       });
-      const stats = await calculateStats(user.id, attempt.id);
+      const stats = await calculateStats(player.id, attempt.id);
       const modelReq = {
-        user_id: String(user.id),
-        background: user.education,
+        user_id: String(player.id),
+        background: player.education,
         question_pool: game.GameQuestion.map((q) => ({
           id: q.question.id,
-          modality: q.question.modality,
-          difficulty: q.question.difficulty,
+          modality: q.question.modality.toLowerCase(),
+          difficulty: q.question.difficulty.toLowerCase(),
         })),
         question_count: game.giveQuestions,
         previous_statistics: stats,
+        calibration_phase: player.Attempt.length === 0,
       };
       const modelRes = await axios.post(
         `${process.env.MODEL_URL}/start_game`,
-        modelReq
+        modelReq,
+        { validateStatus: () => true }
       );
       // const modelRes = { data: { status: true, sessionId: "djsaldjlsad" } };
       if (modelRes.status !== 200)
@@ -102,15 +105,19 @@ export const nextQuestion: RequestHandler = async (
         return responseHandler(res, false, "Previous question not found");
       const correctAnswer = previousQuestion?.Answer.find((a) => a.correct);
       const modelReq = {
-        sessionId: req.body.sessionId,
+        attemptId: attempt.id,
         previousQuestionId: previousQuestion.id,
+        sessionId: req.body.sessionId,
+        answerId: req.body.answerId,
         correct: correctAnswer
           ? correctAnswer.id === Number(req.body.answerId)
           : false,
+        timeTaken: req.body.timeTaken,
       };
       const modelRes = await axios.post(
-        `${process.env.MODEL_URL}/start_game`,
-        modelReq
+        `${process.env.MODEL_URL}/next_question`,
+        modelReq,
+        { validateStatus: () => true }
       );
       // const modelRes = {
       //   data: {
@@ -125,12 +132,12 @@ export const nextQuestion: RequestHandler = async (
       if (modelRes.status !== 200)
         return responseHandler(res, false, "could not get next question");
       const question = await prisma.question.findUnique({
-        where: { id: modelRes.data.question_id },
+        where: { id: modelRes.data.current_question.id },
       });
       if (!question)
         return responseHandler(res, false, "next question not found");
       responseHandler(res, true, "Successful", {
-        question,
+        next: question,
         modelRes: modelRes.data,
       });
     }

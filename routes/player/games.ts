@@ -11,12 +11,12 @@ gameRouter.get(
   controllers.getGames
 );
 gameRouter.post(
-  "/startQuestion",
+  "/start-game",
   passport.authenticate(constants.passport.player),
   controllers.startGame
 );
 gameRouter.post(
-  "/nextQuestion",
+  "/next-question",
   passport.authenticate(constants.passport.player),
   controllers.nextQuestion
 );

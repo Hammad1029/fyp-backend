@@ -62,7 +62,7 @@ export const calculateStats = async (
   });
 
   const pct = (correct: number | null, total: number | null) =>
-    (total || 0) > 0 ? (correct || 0) / (total || 0) : 0;
+    (total || 0) > 0 ? (correct || 0) / (total || 0) : 50;
 
   return {
     easy: pct(sums._sum.easyCorrect, sums._sum.easyTotal),
