@@ -5,6 +5,7 @@ import { createRandomString, responseHandler } from "@/utils/utils";
 import bcrypt from "bcryptjs";
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
+import _ from "lodash";
 
 export const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -26,6 +27,14 @@ export const signUp: RequestHandler = async (req: Request, res: Response) => {
     if (!mindtrackInstitution)
       return responseHandler(res, false, "mindtrack institution not found");
 
+    const otherInstitutions = await prisma.institution.findMany({
+      where: {
+        id: { in: req.body.institutions },
+      },
+    });
+    if (otherInstitutions.length < req.body.institutions.length)
+      return responseHandler(res, false, "missing institutions");
+
     await prisma.player.create({
       data: {
         email: req.body.email,
@@ -33,12 +42,10 @@ export const signUp: RequestHandler = async (req: Request, res: Response) => {
         profilePhoto: req.body.profilePhoto,
         education: req.body.education,
         PlayerInstitution: {
-          create: [
-            ...req.body.institutions.map((i: number) => ({
-              institutionId: i,
-            })),
+          create: _.uniq([
+            ...req.body.institutions,
             mindtrackInstitution.id,
-          ],
+          ]).map((i) => ({ institutionId: i })),
         },
         password,
         token: "",
