@@ -79,7 +79,7 @@ model Question {
   difficulty      String
   Answer          Answer[]
   MediaURL        String
-  type            String
+  modality        String
   SkillSet        String
   AssociatedSkill String
   GameQuestion    GameQuestion[]

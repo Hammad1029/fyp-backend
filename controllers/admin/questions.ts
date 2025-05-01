@@ -13,7 +13,7 @@ export const getQuestions: RequestHandler = async (
       where: {
         OR: [
           { content: { contains: String(req.query.search || "") } },
-          { type: { contains: String(req.query.search || "") } },
+          { modality: { contains: String(req.query.search || "") } },
           { SkillSet: { contains: String(req.query.search || "") } },
           { AssociatedSkill: { contains: String(req.query.search || "") } },
         ],

@@ -51,6 +51,15 @@ services:
   #   networks:
   #     - fyp-net
 
+  fyp-model:
+    image: hammad1029/fyp-model:latest
+    container_name: fyp-model
+    ports:
+      - '8000:8000'
+    tty: true
+    networks:
+      - fyp-net
+
 volumes:
   fyp-data:
     name: fyp-data

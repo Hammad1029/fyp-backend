@@ -48,28 +48,28 @@ export const startGame: RequestHandler = async (
         },
       });
       const stats = await calculateStats(user.id, attempt.id);
-      // const modelReq = {
-      //   user_id: String(user.id),
-      //   background: user.education,
-      //   question_pool: game.GameQuestion.map((q) => ({
-      //     id: q.question.id,
-      //     modality: q.question.modality,
-      //     difficulty: q.question.difficulty,
-      //   })),
-      //   question_count: game.giveQuestions,
-      //   previous_statistics: stats,
-      // };
-      // const modelRes = await axios.post(
-      //   `${process.env.MODEL_URL}/start_game`,
-      //   modelReq
-      // );
-      const modelRes = { data: { status: true, sessionId: "djsaldjlsad" } };
-      if (!modelRes.data?.status)
+      const modelReq = {
+        user_id: String(user.id),
+        background: user.education,
+        question_pool: game.GameQuestion.map((q) => ({
+          id: q.question.id,
+          modality: q.question.modality,
+          difficulty: q.question.difficulty,
+        })),
+        question_count: game.giveQuestions,
+        previous_statistics: stats,
+      };
+      const modelRes = await axios.post(
+        `${process.env.MODEL_URL}/start_game`,
+        modelReq
+      );
+      // const modelRes = { data: { status: true, sessionId: "djsaldjlsad" } };
+      if (modelRes.status !== 200)
         return responseHandler(res, false, "could not start game");
       responseHandler(res, true, "Successful", {
         attempt,
         attemptDetails,
-        modelRes,
+        modelRes: modelRes.data,
       });
     }
   } catch (e) {
@@ -103,33 +103,36 @@ export const nextQuestion: RequestHandler = async (
       const correctAnswer = previousQuestion?.Answer.find((a) => a.correct);
       const modelReq = {
         sessionId: req.body.sessionId,
-        previousQuestion: previousQuestion.id,
+        previousQuestionId: previousQuestion.id,
         correct: correctAnswer
-          ? correctAnswer.id === req.body.answerId.toLowerCase()
+          ? correctAnswer.id === Number(req.body.answerId)
           : false,
       };
-      // const modelRes = await axios.post(
-      //   `${process.env.MODEL_URL}/start_game`,
-      //   modelReq
-      // );
-      const modelRes = {
-        data: {
-          status: true,
-          question_id: 4,
-          modality: "textual",
-          difficulty: "mid",
-          index: 1,
-          total: 10,
-        },
-      };
-      if (!modelRes.data?.status)
+      const modelRes = await axios.post(
+        `${process.env.MODEL_URL}/start_game`,
+        modelReq
+      );
+      // const modelRes = {
+      //   data: {
+      //     status: true,
+      //     question_id: 4,
+      //     modality: "textual",
+      //     difficulty: "mid",
+      //     index: 1,
+      //     total: 10,
+      //   },
+      // };
+      if (modelRes.status !== 200)
         return responseHandler(res, false, "could not get next question");
       const question = await prisma.question.findUnique({
         where: { id: modelRes.data.question_id },
       });
       if (!question)
         return responseHandler(res, false, "next question not found");
-      responseHandler(res, true, "Successful", { question, modelRes });
+      responseHandler(res, true, "Successful", {
+        question,
+        modelRes: modelRes.data,
+      });
     }
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
