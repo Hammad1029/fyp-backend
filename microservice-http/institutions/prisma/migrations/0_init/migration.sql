@@ -37,3 +37,4 @@ ALTER TABLE "Institution" ADD CONSTRAINT "Institution_typeId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "PlayerInstitution" ADD CONSTRAINT "PlayerInstitution_institutionId_fkey" FOREIGN KEY ("institutionId") REFERENCES "Institution"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+

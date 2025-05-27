@@ -2,7 +2,7 @@ import * as controllers from "@/controllers/admin";
 import { Router } from "express";
 import { authenticate, authorize } from "@/utils/middlewares";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/sign-in", controllers.signIn);
 

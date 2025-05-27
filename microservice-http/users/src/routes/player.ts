@@ -2,7 +2,7 @@ import * as controllers from "@/controllers/player";
 import { Router } from "express";
 import { authenticate } from "@/utils/middlewares";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/sign-up", controllers.signUp);
 

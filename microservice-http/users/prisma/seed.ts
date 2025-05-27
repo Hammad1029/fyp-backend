@@ -1,6 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
-const { bcryptRounds, defaultPassword } = require("@/utils/constants");
 
 const prisma = new PrismaClient();
 
@@ -67,7 +66,10 @@ async function main() {
 
     // Create super user
     console.log("Creating super user...");
-    const password = await bcrypt.hash(defaultPassword, bcryptRounds);
+    const password = await bcrypt.hash(
+      process.env.DEFAULT_PASSWORD,
+      10
+    );
     const superUser = await prisma.admins.create({
       data: {
         email: "hammad1029@gmail.com",
@@ -81,7 +83,7 @@ async function main() {
     console.log("Super user created");
 
     console.log(
-      `User seeding completed! Please login with email: ${superUser.email} and password ${defaultPassword}`
+      `User seeding completed! Please login with email: ${superUser.email} and password ${process.env.DEFAULT_PASSWORD}`
     );
   } catch (error) {
     console.error("Error during seeding:", error);
