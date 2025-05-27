@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Permissions {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  RolePermissions RolePermissions[]
+}
+
+model Roles {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  RolePermissions RolePermissions[]
+  Admins          Admins[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model RolePermissions {
+  permission   Permissions @relation(fields: [permissionId], references: [id])
+  permissionId Int
+  role         Roles       @relation(fields: [roleId], references: [id])
+  roleId       Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@id([permissionId, roleId])
+}
+
+model Admins {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  token         String
+  role          Roles    @relation(fields: [roleId], references: [id])
+  roleId        Int
+  institutionId Int      @map("institutionId")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Player {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  token        String
+  displayName  String
+  profilePhoto String
+  education    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Institution {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  email             String              @unique
+  logo              String
+  type              InstitutionTypes    @relation(fields: [typeId], references: [id])
+  typeId            Int
+  PlayerInstitution PlayerInstitution[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@map("Institution")
+}
+
+model InstitutionTypes {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  Institution Institution[]
+}
+
+model PlayerInstitution {
+  playerId      Int
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  institutionId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@id([playerId, institutionId])
+  @@map("PlayerInstitution")
+}

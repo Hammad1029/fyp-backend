@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Backend",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "tsx",
+        "args": ["app.ts"],
+        "cwd": "${workspaceFolder}/src",
+        "skipFiles": ["<node_internals>/**"],
+        "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
+        "outFiles": ["${workspaceFolder}/**/*.js"],
+        "env": {
+          "NODE_ENV": "development"
+        }
+      }
+    ]
+  }
+  

@@ -1,3 +1,2 @@
-node_modules
-prsima/migrations/
-.env
+**/node_modules
+**/prsima/migrations/

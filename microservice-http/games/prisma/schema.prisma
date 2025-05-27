@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id              Int            @id @default(autoincrement())
+  content         String
+  time            Int
+  difficulty      String
+  Answer          Answer[]
+  MediaURL        String
+  modality        String
+  SkillSet        String
+  AssociatedSkill String
+  GameQuestion    GameQuestion[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @default(now()) @updatedAt
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  content    String
+  correct    Boolean
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model Game {
+  id            Int            @id @default(autoincrement())
+  name          String
+  institutionId Int
+  tags          String[]
+  time          Int
+  GameQuestion  GameQuestion[]
+  giveQuestions Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model GameQuestion {
+  game       Game     @relation(fields: [gameId], references: [id])
+  gameId     Int
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@id([gameId, questionId])
+}

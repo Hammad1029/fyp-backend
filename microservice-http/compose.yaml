@@ -1,0 +1,140 @@
+services:
+  institutions-db:
+    image: postgres:15
+    container_name: institutions-db
+    restart: always
+    environment:
+      - POSTGRES_DB=institutions
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  users-db:
+    image: postgres:15
+    container_name: users-db
+    restart: always
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d fyp" ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  games-db:
+    image: postgres:15
+    container_name: games-db
+    restart: always
+    environment:
+      - POSTGRES_DB=games
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d fyp" ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  attempts-db:
+    image: postgres:15
+    container_name: attempts-db
+    restart: always
+    environment:
+      - POSTGRES_DB=attempts
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d fyp" ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  institutions:
+    container_name: institutions
+    build:
+      context: /home/hammaduh/dev/fyp/backend/microservice-http/institutions
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+    depends_on:
+      institutions-db:
+        condition: service_healthy
+    env_file:
+      - /home/hammaduh/dev/fyp/backend/microservice-http/institutions/.env
+
+  users:
+    container_name: users
+    build:
+      context: /home/hammaduh/dev/fyp/backend/microservice-http/users
+    ports:
+      - '3001:3000'
+    stdin_open: true
+    tty: true
+    depends_on:
+      users-db:
+        condition: service_healthy
+    env_file:
+      - /home/hammaduh/dev/fyp/backend/microservice-http/users/.env
+
+  games:
+    container_name: games
+    build:
+      context: /home/hammaduh/dev/fyp/backend/microservice-http/games
+    ports:
+      - '3002:3000'
+    stdin_open: true
+    tty: true
+    depends_on:
+      games-db:
+        condition: service_healthy
+    env_file:
+      - /home/hammaduh/dev/fyp/backend/microservice-http/games/.env
+
+  attempts:
+    container_name: attempts
+    build:
+      context: /home/hammaduh/dev/fyp/backend/microservice-http/attempts/
+    ports:
+      - '3003:3000'
+    stdin_open: true
+    tty: true
+    depends_on:
+      attempts-db:
+        condition: service_healthy
+    env_file:
+      - /home/hammaduh/dev/fyp/backend/microservice-http/attempts/.env
