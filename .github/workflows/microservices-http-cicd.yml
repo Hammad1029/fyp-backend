@@ -28,16 +28,16 @@ jobs:
       - name: Build and push all microservices
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-institutions ./microservice-http/institutions
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/institutions
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-institutions
 
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-users ./microservice-http/users
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/users
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-users
 
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-games ./microservice-http/games
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/games
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-games
 
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-attempts ./microservice-http/attempts
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/attempts
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-attempts
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
