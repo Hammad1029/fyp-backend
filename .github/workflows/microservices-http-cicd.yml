@@ -1,0 +1,50 @@
+name: Build and Push Microservices
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "microservice-http/**"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push all microservices
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-institutions ./microservice-http/institutions
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/institutions
+
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-users ./microservice-http/users
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/users
+
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-games ./microservice-http/games
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/games
+
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fyp-micro-http-attempts ./microservice-http/attempts
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/attempts
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/fyp
+            docker compose pull
+            docker compose up -d

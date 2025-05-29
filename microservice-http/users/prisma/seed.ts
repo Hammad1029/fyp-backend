@@ -45,6 +45,7 @@ async function main() {
         { name: "game-view" },
         { name: "game-edit" },
         { name: "game-delete" },
+        { name: "stats-view" },
       ],
     });
     console.log("Permissions created");
@@ -66,10 +67,7 @@ async function main() {
 
     // Create super user
     console.log("Creating super user...");
-    const password = await bcrypt.hash(
-      process.env.DEFAULT_PASSWORD,
-      10
-    );
+    const password = await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10);
     const superUser = await prisma.admins.create({
       data: {
         email: "hammad1029@gmail.com",

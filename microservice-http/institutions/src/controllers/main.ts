@@ -31,7 +31,7 @@ export const createInstitution: RequestHandler = async (
 ) => {
   try {
     const institutionType = await prisma.institutionTypes.findFirst({
-      where: { id: req.body.type },
+      where: { id: req.body.typeId },
     });
     if (!institutionType)
       return responseHandler(res, false, "institution type not found");

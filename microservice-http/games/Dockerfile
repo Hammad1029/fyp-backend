@@ -40,8 +40,6 @@ COPY --from=builder /app/tsconfig.json ./tsconfig.json
 # Set environment variables
 ENV NODE_ENV=production
 
-EXPOSE 3001
-
 # Create startup command that waits for DB and runs migrations before starting app
-CMD ["sh", "-c", "npm run db:deploy && npm run seed && node dist/app.mjs"]
+CMD ["sh", "-c", "npm run generate && node dist/app.mjs"]
 

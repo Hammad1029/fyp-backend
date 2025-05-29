@@ -1,8 +1,8 @@
-import * as controllers from "@/controllers";
+import * as controllers from "@/controllers/attempt";
 import { Router } from "express";
-import { authenticate } from "./utils/middlewares";
+import { authenticate } from "@/utils/middlewares";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/start-attempt", authenticate, controllers.startAttempt);
 

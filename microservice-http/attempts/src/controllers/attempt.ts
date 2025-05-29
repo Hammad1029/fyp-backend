@@ -1,8 +1,7 @@
-import { prisma, calculateStats, responseHandler } from "@/utils/utils";
+import { calculateStats, prisma, responseHandler } from "@/utils/utils";
 import { Request, RequestHandler, Response } from "express";
-import axios from "axios";
-import gameService from "./services/game";
-import modelService, { startGameRequest } from "./services/model";
+import gameService from "@/services/game";
+import modelService, { startGameRequest } from "@/services/model";
 
 export const startAttempt: RequestHandler = async (
   req: Request,

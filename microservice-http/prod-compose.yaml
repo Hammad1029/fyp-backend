@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   institutions-db:
     image: postgres:15
@@ -84,60 +86,52 @@ services:
         max-file: "3"
 
   institutions:
+    image: hammad1029/fyp-micro-http-institutions:latest
     container_name: institutions
-    build:
-      context: /home/hammaduh/dev/fyp/backend/microservice-http/institutions
     ports:
-      - '3000:3000'
-    stdin_open: true
-    tty: true
+      - "3000:3000"
     depends_on:
       institutions-db:
         condition: service_healthy
     env_file:
-      - /home/hammaduh/dev/fyp/backend/microservice-http/institutions/.env
+      - institutions-env
+    restart: always
 
   users:
+    image: hammad1029/fyp-micro-http-users:latest
     container_name: users
-    build:
-      context: /home/hammaduh/dev/fyp/backend/microservice-http/users
     ports:
-      - '3001:3000'
-    stdin_open: true
-    tty: true
+      - "3001:3000"
     depends_on:
       users-db:
         condition: service_healthy
     env_file:
-      - /home/hammaduh/dev/fyp/backend/microservice-http/users/.env
+      - users-env
+    restart: always
 
   games:
+    image: hammad1029/fyp-micro-http-games:latest
     container_name: games
-    build:
-      context: /home/hammaduh/dev/fyp/backend/microservice-http/games
     ports:
-      - '3002:3000'
-    stdin_open: true
-    tty: true
+      - "3002:3000"
     depends_on:
       games-db:
         condition: service_healthy
     env_file:
-      - /home/hammaduh/dev/fyp/backend/microservice-http/games/.env
+      - games-env
+    restart: always
 
   attempts:
+    image: hammad1029/fyp-micro-http-attempts:latest
     container_name: attempts
-    build:
-      context: /home/hammaduh/dev/fyp/backend/microservice-http/attempts/
     ports:
-      - '3003:3000'
-    stdin_open: true
-    tty: true
+      - "3003:3000"
     depends_on:
       attempts-db:
         condition: service_healthy
     env_file:
-      - /home/hammaduh/dev/fyp/backend/microservice-http/attempts/.env
+      - attempts-env
+    restart: always
 
   model:
     image: hammad1029/fyp-model:latest

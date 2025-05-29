@@ -46,7 +46,10 @@ export const signIn: RequestHandler = async (req: Request, res: Response) => {
       },
     });
 
-    responseHandler(res, true, "Successful", { token, user });
+    responseHandler(res, true, "Successful", {
+      token,
+      user: { ...user, token: undefined, password: undefined },
+    });
   } catch (e) {
     responseHandler(res, false, "", undefined, e);
   }
@@ -78,6 +81,7 @@ export const getUsers: RequestHandler = async (req: Request, res: Response) => {
           { email: { contains: String(req.query.search || "") } },
         ],
       },
+      omit: { password: true, token: true },
     });
     responseHandler(res, true, "Successful", users);
   } catch (e) {

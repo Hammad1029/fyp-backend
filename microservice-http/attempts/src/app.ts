@@ -1,4 +1,5 @@
-import appRouter from "@/api.js";
+import attemptRouter from "@/routes/attempt";
+import statsRouter from "@/routes/stats";
 import * as constants from "@/utils/constants.js";
 import cors from "cors";
 import express from "express";
@@ -11,7 +12,8 @@ const port = constants.env.port;
 app.use(cors());
 app.use(express.json());
 
-app.use(appRouter);
+app.use("/", attemptRouter);
+app.use("/stats", statsRouter);
 
 app.listen(port, (e) => {
   if (e) console.error(e);
