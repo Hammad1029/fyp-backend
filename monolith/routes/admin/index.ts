@@ -1,11 +1,11 @@
 import { Router } from "express";
 import authRouter from "./auth";
+import gameRouter from "./game";
+import institutionRouter from "./institution";
+import playerRouter from "./players";
+import questionRouter from "./questions";
 import roleRouter from "./roles";
 import userRouter from "./user";
-import institutionRouter from "./institution";
-import questionRouter from "./questions";
-import gameRouter from "./game";
-import playerRouter from "./players";
 
 const adminRouter = Router();
 

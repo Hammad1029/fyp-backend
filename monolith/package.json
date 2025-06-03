@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsup ./index.ts",
+    "build": "tsup index.ts",
     "start": "tsx index.ts",
     "generate": "npx prisma generate",
     "seed": "npx prisma db seed"
@@ -42,7 +42,7 @@
     "@types/passport-http-bearer": "^1.0.41",
     "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",
-    "tsup ": "^8.4.0",
+    "tsup": "^8.4.0",
     "typescript": "^5.7.3"
   }
 }

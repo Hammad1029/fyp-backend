@@ -9,15 +9,11 @@ services:
       - POSTGRES_PASSWORD=root
     ports:
       - "5432:5432"
-    networks:
-      - fyp-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d fyp"]
       interval: 5s
       timeout: 2s
       retries: 20
-    volumes:
-      - fyp-data:/var/lib/postgresql/data
     command: postgres -c listen_addresses='*'
     logging:
       options:
@@ -36,8 +32,6 @@ services:
   #       condition: service_healthy
   #   env_file:
   #     - /home/hammaduh/dev/fyp/backend/.env
-  #   networks:
-  #     - fyp-net
 
   # fyp-frontend:
   #   image: hammad1029/fyp-frontend:latest
@@ -48,23 +42,10 @@ services:
   #   tty: true
   #   env_file:
   #     - /home/hammaduh/dev/fyp/mindtrack2/.env
-  #   networks:
-  #     - fyp-net
 
-  fyp-model:
-    image: hammad1029/fyp-model:latest
-    container_name: fyp-model
-    ports:
-      - '8000:8000'
-    tty: true
-    networks:
-      - fyp-net
-
-volumes:
-  fyp-data:
-    name: fyp-data
-
-networks:
-  fyp-net:
-    name: fyp-net
-    external: false
+  # fyp-model:
+  #   image: hammad1029/fyp-model:latest
+  #   container_name: fyp-model
+  #   ports:
+  #     - '8000:8000'
+  #   tty: true
