@@ -72,7 +72,7 @@ export const getOverviewStats: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const playerId = req.user?.data?.id;
+    const playerId = req.body.playerId;
 
     const attempts = await prisma.attempt.findMany({
       where: { playerId },
@@ -149,7 +149,7 @@ export const getOverviewStats: RequestHandler = async (
 
 export const getSkillLevels = async (req: Request, res: Response) => {
   try {
-    const playerId = req.user?.data?.id;
+    const playerId = req.body.playerId;
 
     const attempts = await prisma.attempt.findMany({
       where: { playerId },
@@ -206,7 +206,7 @@ export const getSkillLevels = async (req: Request, res: Response) => {
 
 export const getCategoryPerformance = async (req: Request, res: Response) => {
   try {
-    const playerId = req.user?.data?.id;
+    const playerId = req.body.playerId;
 
     const attempts = await prisma.attempt.findMany({
       where: { playerId },
@@ -317,7 +317,7 @@ export const getCategoryPerformance = async (req: Request, res: Response) => {
 
 export const getProgressionStats = async (req: Request, res: Response) => {
   try {
-    const playerId = req.user?.data?.id;
+    const playerId = req.body.playerId;
 
     const timeframe =
       (req.query.timeframe as "daily" | "weekly" | "monthly") || "weekly";
@@ -420,7 +420,7 @@ export const getProgressionStats = async (req: Request, res: Response) => {
 
 export const getRecentActivity = async (req: Request, res: Response) => {
   try {
-    const playerId = req.user?.data?.id;
+    const playerId = req.body.playerId;
 
     const limit = parseInt(req.query.limit as string) || 10;
 
